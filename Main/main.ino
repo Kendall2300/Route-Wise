@@ -2,8 +2,8 @@
 #include <WebServer.h>
 
 // Configuración de WiFi
-const char* ssid = "TU_WIFI";           // Cambia esto por tu SSID
-const char* password = "TU_PASSWORD";    // Cambia esto por tu contraseña
+const char* ssid = "K2300";           // Cambia esto por tu SSID
+const char* password = "Chocolate_2307";    // Cambia esto por tu contraseña
 
 // Configuración de IP estática
 IPAddress local_IP(192, 168, 1, 100);      // IP que quieres para el ESP32
