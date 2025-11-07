@@ -1,18 +1,14 @@
 #include <WiFi.h>
 #include <WebServer.h>
 
-<<<<<<< Updated upstream
-// Configuración de WiFi
-const char* ssid = "TU_WIFI";           // Cambia esto por tu SSID
-const char* password = "TU_PASSWORD";    // Cambia esto por tu contraseña
-=======
 const char* ssid = "K2300PT";
 const char* password = "Chocolate-2307";
->>>>>>> Stashed changes
 
 WebServer server(80);
 
-// HTML con selector de paradas
+const int pin1 = 1; // GPIO1
+const int pin2 = 2; // GPIO2
+
 const char* htmlForm = R"rawliteral(
 <!DOCTYPE html>
 <html>
@@ -34,31 +30,40 @@ const char* htmlForm = R"rawliteral(
 </html>
 )rawliteral";
 
-// Muestra el formulario en "/"
 void handleRoot() {
   server.send(200, "text/html", htmlForm);
 }
 
-// Muestra "Debug" en "/dev"
 void handleDev() {
   server.send(200, "text/html", "<h1>Debug</h1>");
 }
 
-// Manejador para la selección POST
 void handleSelect() {
-  Serial.println("Entró a handleSelect"); // Línea de prueba
   if (server.hasArg("parada")) {
     String parada = server.arg("parada");
-    Serial.print("Parada seleccionada: ");
-    Serial.println(parada);
+
+    if (parada == "Parada1") {
+      digitalWrite(pin1, HIGH); // Enciende LED 1
+      digitalWrite(pin2, LOW);  // Apaga LED 2
+    } else if (parada == "Parada2") {
+      digitalWrite(pin1, LOW);  // Apaga LED 1
+      digitalWrite(pin2, HIGH); // Enciende LED 2
+    }
+
     server.send(200, "text/html", "<h2>Parada seleccionada: " + parada + "</h2><a href='/'>Volver</a>");
   } else {
     server.send(400, "text/html", "<h2>Error: No se seleccionó ninguna parada.</h2>");
   }
 }
 
-
 void setup() {
+  pinMode(pin1, OUTPUT);
+  pinMode(pin2, OUTPUT);
+
+  // Al arrancar, ambos apagados
+  digitalWrite(pin1, LOW);
+  digitalWrite(pin2, LOW);
+
   Serial.begin(115200);
   WiFi.begin(ssid, password);
   while (WiFi.status() != WL_CONNECTED) {
@@ -71,7 +76,7 @@ void setup() {
 
   server.on("/", handleRoot);
   server.on("/dev", handleDev);
-  server.on("/select", HTTP_POST, handleSelect);  // Nuevo endpoint para el formulario
+  server.on("/select", HTTP_POST, handleSelect);
   server.begin();
   Serial.println("Servidor web iniciado!");
 }
